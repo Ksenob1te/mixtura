@@ -1,0 +1,3 @@
+[submodule "mixtura-backend"]
+	path = mixtura-backend
+	url = https://github.com/Ksenob1te/mixtura-backend.git
