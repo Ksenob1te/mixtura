@@ -1,6 +1,10 @@
 [submodule "mixtura-backend"]
 	path = mixtura-backend
 	url = https://github.com/Ksenob1te/mixtura-backend.git
+	branch = develop
+	update = merge
 [submodule "mixtura-frontend"]
 	path = mixtura-frontend
 	url = https://github.com/Ksenob1te/mixtura-frontend.git
+    branch = develop
+	update = merge
