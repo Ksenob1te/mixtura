@@ -7,19 +7,24 @@
 	path = mixtura-backend/auth-service
 	url = https://github.com/mixtura-dev/mixtura-backend-auth.git
 	branch = develop
+	update = merge
 [submodule "mixtura-backend/mixer-service"]
 	path = mixtura-backend/mixer-service
 	url = https://github.com/mixtura-dev/mixtura-backend-mixer.git
 	branch = develop
+	update = merge
 [submodule "mixtura-backend/server-service"]
 	path = mixtura-backend/server-service
 	url = https://github.com/mixtura-dev/mixtura-backend-server.git
 	branch = develop
+	update = merge
 [submodule "mixtura-backend/tournament-service"]
 	path = mixtura-backend/tournament-service
 	url = https://github.com/mixtura-dev/mixtura-backend-tournament.git
 	branch = develop
+	update = merge
 [submodule "mixtura-backend/user-service"]
 	path = mixtura-backend/user-service
 	url = https://github.com/mixtura-dev/mixtura-backend-user.git
 	branch = develop
+	update = merge
