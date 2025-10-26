@@ -1,0 +1,72 @@
+services:
+  auth:
+    build: mixtura-backend/auth-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-mixtura}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_USER: ${REDIS_USER:-default}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-default}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_DOMAIN: ${SMTP_DOMAIN}
+      SERVER_PROXY: ${SERVER_PROXY:-}
+    volumes:
+      - ./.local/mixtura-auth:/mixtura-auth/.local
+      - ./.local/migrations-auth:/mixtura-auth/alembic/versions
+    restart: always
+  
+  frontend:
+    restart: always
+    build:
+      context: mixtura-frontend
+      dockerfile: .docker/Dockerfile_production
+
+  postgres:
+    image: postgres:latest
+    restart: always
+    shm_size: 128mb
+    volumes:
+      - ./.local/.postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-mixtura}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:latest
+    restart: always
+    environment:
+      REDIS_USER: ${REDIS_USER:-default}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-default}
+    volumes:
+      - ./.local/.redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./conf/nginx:/etc/nginx/conf.d
+      - ./.local/nginx-logs:/var/log/nginx/
+    restart: always
+    depends_on:
+      frontend:
+        condition: service_started

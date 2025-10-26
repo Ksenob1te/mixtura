@@ -8,3 +8,4 @@ __pycache__
 /**/alembic/versions/*
 /database/
 /.local/
+docker-compose.override*
