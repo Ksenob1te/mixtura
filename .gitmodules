@@ -28,3 +28,7 @@
 	url = https://github.com/mixtura-dev/mixtura-backend-user.git
 	branch = develop
 	update = merge
+[submodule "gateway"]
+	path = mixtura-backend/gateway
+	url = https://github.com/mixtura-dev/mixtura-backend-gateway
+	branch = develop

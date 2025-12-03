@@ -1,0 +1,26 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "mixtura-backend/auth-service"
+		},
+		{
+			"path": "mixtura-backend/server-service"
+		},
+		{
+			"path": "mixtura-backend/mixer-service"
+		},
+		{
+			"path": "mixtura-backend/tournament-service"
+		},
+		{
+			"path": "mixtura-backend/user-service"
+		},
+		{
+			"path": "mixtura-backend/gateway"
+		}
+	],
+	"settings": {}
+}
