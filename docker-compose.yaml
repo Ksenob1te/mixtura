@@ -6,6 +6,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-mixtura}
       POSTGRES_HOST: postgres
@@ -20,16 +22,41 @@ services:
       SMTP_PASSWORD: ${SMTP_PASSWORD}
       SMTP_DOMAIN: ${SMTP_DOMAIN}
       SERVER_PROXY: ${SERVER_PROXY:-}
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_HOST: rabbitmq
+
     volumes:
       - ./.local/mixtura-auth:/mixtura-auth/.local
-      - ./.local/migrations-auth:/mixtura-auth/alembic/versions
     restart: always
-  
+
+  gateway:
+    build: mixtura-backend/gateway
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_USER: ${REDIS_USER:-default}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-default}
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_HOST: rabbitmq
+    volumes:
+      - ./.local/mixtura-gateway:/mixtura-gateway/.local
+    restart: always
+
   frontend:
     restart: always
     build:
       context: mixtura-frontend
       dockerfile: .docker/Dockerfile_production
+    env_file: .env
 
   postgres:
     image: postgres:latest
@@ -42,7 +69,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -56,11 +83,26 @@ services:
     volumes:
       - ./.local/.redis:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 5
-  
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    volumes:
+      - ./.local/rabbitmq:/var/lib/rabbitmq
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
   nginx:
     image: nginx:latest
     volumes:
