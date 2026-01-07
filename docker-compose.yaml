@@ -9,7 +9,7 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-mixtura}
+      POSTGRES_DB: mixtura-auth
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -28,6 +28,32 @@ services:
 
     volumes:
       - ./.local/mixtura-auth:/mixtura-auth/.local
+    restart: always
+
+  server:
+    build: mixtura-backend/server-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      POSTGRES_DB: mixtura-server
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_USER: ${REDIS_USER:-default}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-default}
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_HOST: rabbitmq
+    volumes:
+      - ./.local/mixtura-server:/mixtura-server/.local
     restart: always
 
   gateway:
