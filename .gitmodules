@@ -18,17 +18,22 @@
 	url = https://github.com/mixtura-dev/mixtura-backend-server.git
 	branch = develop
 	update = merge
-[submodule "mixtura-backend/tournament-service"]
-	path = mixtura-backend/tournament-service
-	url = https://github.com/mixtura-dev/mixtura-backend-tournament.git
-	branch = develop
-	update = merge
-[submodule "mixtura-backend/user-service"]
-	path = mixtura-backend/user-service
-	url = https://github.com/mixtura-dev/mixtura-backend-user.git
-	branch = develop
-	update = merge
 [submodule "gateway"]
 	path = mixtura-backend/gateway
 	url = https://github.com/mixtura-dev/mixtura-backend-gateway
 	branch = develop
+[submodule "mixtura-backend/mixtura-balancer-tournament"]
+	path = mixtura-backend/mixtura-balancer-tournament
+	url = https://github.com/mixtura-dev/mixtura-balancer-tournament.git
+	branch = develop
+	update = merge
+[submodule "mixtura-backend/mixtura-balancer"]
+	path = mixtura-backend/mixtura-balancer
+	url = https://github.com/mixtura-dev/mixtura-balancer.git
+	branch = develop
+	update = merge
+[submodule "mixtura-backend/mixtura-ranker"]
+	path = mixtura-backend/mixtura-ranker
+	url = https://github.com/mixtura-dev/mixtura-ranker.git
+	branch = develop
+	update = merge

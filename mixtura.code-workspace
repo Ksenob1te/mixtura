@@ -13,10 +13,13 @@
 			"path": "mixtura-backend/mixer-service"
 		},
 		{
-			"path": "mixtura-backend/tournament-service"
+			"path": "mixtura-backend/mixtura-balancer"
 		},
 		{
-			"path": "mixtura-backend/user-service"
+			"path": "mixtura-backend/mixtura-balancer-tournament"
+		},
+		{
+			"path": "mixtura-backend/mixtura-ranker"
 		},
 		{
 			"path": "mixtura-backend/gateway"

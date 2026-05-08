@@ -27,7 +27,7 @@ services:
       RABBITMQ_HOST: rabbitmq
 
     volumes:
-      - ./.local/mixtura-auth:/mixtura-auth/.local
+      - ./.local/mixtura-auth:/app/.local
     restart: always
 
   server:
@@ -53,7 +53,93 @@ services:
       RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
       RABBITMQ_HOST: rabbitmq
     volumes:
-      - ./.local/mixtura-server:/mixtura-server/.local
+      - ./.local/mixtura-server:/app/.local
+    restart: always
+
+  mixer:
+    build: mixtura-backend/mixer-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      POSTGRES_DB: mixtura-mixer
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_USER: ${REDIS_USER:-default}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-default}
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_HOST: rabbitmq
+    volumes:
+      - ./.local/mixtura-mixer:/app/.local
+    restart: always
+
+  ranker:
+    build: mixtura-backend/mixtura-ranker
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      POSTGRES_DB: mixtura-ranker
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_USER: ${REDIS_USER:-default}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-default}
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_HOST: rabbitmq
+    volumes:
+      - ./.local/mixtura-ranker:/app/.local
+    restart: always
+
+  single-balancer:
+    build: mixtura-backend/mixtura-balancer
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_HOST: rabbitmq
+    volumes:
+      - ./.local/mixtura-balancer:/app/.local
+    restart: always
+
+  tournament-balancer:
+    build: mixtura-backend/mixtura-balancer-tournament
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_HOST: rabbitmq
+    volumes:
+      - ./.local/mixtura-balancer-tournament:/app/.local
     restart: always
 
   gateway:
@@ -74,7 +160,7 @@ services:
       RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
       RABBITMQ_HOST: rabbitmq
     volumes:
-      - ./.local/mixtura-gateway:/mixtura-gateway/.local
+      - ./.local/mixtura-gateway:/app/.local
     restart: always
 
   frontend:
@@ -90,8 +176,8 @@ services:
     shm_size: 128mb
     volumes:
       - ./.local/.postgres:/var/lib/postgresql/data
+      - ./conf/postgres/init:/docker-entrypoint-initdb.d
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-mixtura}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     healthcheck:
@@ -113,6 +199,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: rabbitmq
